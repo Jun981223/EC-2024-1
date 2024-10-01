@@ -2,7 +2,7 @@
 @ Embedded Controller by Young-Keun Kim - Handong Global University
 Author           : Han Dongjun
 Created          : 05-03-2021
-Modified         : 09-12-2024
+Modified         : 09-23-2024
 Language/ver     : C++ in Keil uVision
 
 Description      : Distributed to Students for LAB_GPIO
@@ -15,7 +15,7 @@ Description      : Distributed to Students for LAB_GPIO
 #include "ecGPIO2_student.h"
 
 PinName_t pinNames[8] = {PA_5, PA_6, PA_7, PB_6, PC_7, PA_9, PA_8, PB_10};
-
+PinName_t pinNames_EXTI[4] = {PA_7, PB_6, PC_7, PA_9};
 
 void GPIO_init(PinName_t pinName, uint32_t mode){     
 	GPIO_TypeDef * Port;
@@ -154,6 +154,16 @@ void sevensegment_display_init(PinName_t pinNameA, PinName_t pinNameB, PinName_t
     GPIO_ospeed(pinNameD, MediumSpeed);
 }
 
+void sevensegment_display_init2(void){
+    for(int i = 0; i < 4; i++) {
+        GPIO_init(pinNames_EXTI[i], OUTPUT);       
+        GPIO_otype(pinNames_EXTI[i], PushPull);    
+        GPIO_pupd(pinNames_EXTI[i], EC_NPUNPD);    
+        GPIO_ospeed(pinNames_EXTI[i], MediumSpeed);
+    }
+}
+
+
 // main.c, counting the number
 void sevensegment_display(uint8_t num){
     if (num > 9) return;
@@ -210,7 +220,7 @@ void sevensegment_decoder_init(void){
 void sevensegment_decoder(uint8_t  num){
     if (num > 9) return;
 
-    // bringing set of 4 bits number from decoder_output
+    // bringing set of 8 bits number from decoder_alphabet
     char *code = decoder_alphabet[num];
 
     // defining each bit number for each pin
@@ -223,4 +233,44 @@ void sevensegment_decoder(uint8_t  num){
     GPIO_write(PA_8, code[6]);  // g
     GPIO_write(PB_10, code[7]);  // h
 }
+
+/*
+//In each 1 sec, toggling LED
+void LED_toggle(void){
+    GPIOA->ODR ^= (1<<5);
+}
+*/
+
+void LED_toggle(void) {
+    // Read current state of the LED pin
+    if(GPIOA->ODR & (1<<5))    // If PA_5 is high (LED on)
+        GPIO_write(LED_PIN, LOW);   // Turn off the LED
+    else
+        GPIO_write(LED_PIN, HIGH);  // Turn on the LED
+}
+
+
+void MCU_init(void){
+    // CLOCK PLL 84MHz
+    RCC_PLL_init();
+    
+    // SysTick 1msec
+  //  SysTick_init();    
+    
+    // Button PC13
+    GPIO_init(PC_13, INPUT);
+    GPIO_pupd(PC_13, EC_PD);    
+    
+    // LED PA5
+    GPIO_init(PA_5, OUTPUT);    
+
+    // TIMx Default Initialization
+    // ...
+    // PWM Default Initialization
+    // ...        
+    // USART Default Initialization
+    // ...
+    // Others
+}
+
 

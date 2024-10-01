@@ -2,7 +2,7 @@
 @ Embedded Controller by Young-Keun Kim - Handong Global University
 Author           : Han Dongjun
 Created          : 05-03-2021
-Modified         : 09-12-2024
+Modified         : 09-23-2024
 Language/ver     : C++ in Keil uVision
 
 Description      : Distributed to Students for LAB_GPIO
@@ -55,10 +55,16 @@ void GPIO_pupd(PinName_t pinName, int pupd);
 
 void sevensegment_display_init(PinName_t pinNameA, PinName_t pinNameB, PinName_t pinNameC, PinName_t pinNameD); 
 void sevensegment_display(uint8_t  num);
+void sevensegment_display_init2(void); // for LAB_EXTI
 
 void sevensegment_decoder_init(void);
 void sevensegment_decoder(uint8_t  num);
- 
+
+void LED_toggle(void);
+		 
+void MCU_init(void);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
